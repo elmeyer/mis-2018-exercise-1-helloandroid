@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">helloandroid</string>
     <string name="button_xyz">hit me</string>
+    <string name="textBoxDefault">URL</string>
+    <string name="textBoxHint">Enter URL to download</string>
 </resources>
