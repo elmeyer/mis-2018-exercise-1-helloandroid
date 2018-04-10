@@ -1,5 +1,6 @@
 package com.example.mis.helloandroid;
 
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -32,6 +33,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /* Unsavory hack to get rid of Error StrictMode$AndroidBlockGuardPolicy.onNetwork
+         * (via https://stackoverflow.com/a/22395472)
+         */
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
 
         // Reference the text input box from activity_main.xml
         textBox = findViewById(R.id.editText);
