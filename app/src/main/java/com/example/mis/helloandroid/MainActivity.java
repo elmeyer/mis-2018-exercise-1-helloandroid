@@ -55,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 // Get the input from the text box
                 String textBoxString = textBox.getText().toString();
+                if (!(textBoxString.startsWith("http://"))) {
+                    textBoxString = "http://" + textBoxString;
+                }
 
                 try {
                     // Convert it to a URL
@@ -79,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         /* This is needed to update the TextView successfully
+                         * “Only the original thread that created a view hierarchy can touch its
+                         * views.” - Android error message, 2018
                          * (via https://stackoverflow.com/a/5162096)
                          */
                         runOnUiThread(new Runnable() {
@@ -88,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
+                    // Clean up
                     } finally {
                             connection.disconnect();
                     }
@@ -95,18 +101,30 @@ public class MainActivity extends AppCompatActivity {
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
 
-                    // show Toast to tell user what went wrong
-                    Toast malformedURLToast = Toast.makeText(MainActivity.this, "Invalid URL",
-                            Toast.LENGTH_SHORT);
-                    malformedURLToast.show();
+                    // see above
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // show Toast to tell user what went wrong
+                            Toast malformedURLToast = Toast.makeText(MainActivity.this, "Invalid URL",
+                                    Toast.LENGTH_SHORT);
+                            malformedURLToast.show();
+                        }
+                    });
 
                 } catch (IOException e) {
                     e.printStackTrace();
 
-                    // show Toast to tell user what went wrong
-                    Toast connectionErrorToast = Toast.makeText(MainActivity.this,
-                            "Unable to connect", Toast.LENGTH_SHORT);
-                    connectionErrorToast.show();
+                    // see above
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // show Toast to tell user what went wrong
+                            Toast connectionErrorToast = Toast.makeText(MainActivity.this,
+                                    "Unable to connect", Toast.LENGTH_SHORT);
+                            connectionErrorToast.show();
+                        }
+                    });
                 }
             }
         });
