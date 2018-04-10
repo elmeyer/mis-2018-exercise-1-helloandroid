@@ -1,11 +1,16 @@
 package com.example.mis.helloandroid;
 
+import android.content.ContentResolver;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     EditText textBox;
     // This will reference the text view, where contents are to be displayed.
     TextView textView;
+    // This will reference the image view, in case we encounter an image.
+    ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         textBox = findViewById(R.id.editText);
         // Reference the text view from activity_main.xml
         textView = findViewById(R.id.textView);
+        // Reference the image view from activity_main.xml
+        imageView = findViewById(R.id.imageView);
     }
 
     // This will be run when the "Connect" button is pressed.
@@ -72,6 +81,39 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         // Open URL stream, read it line by line into urlContent
                         InputStream urlStream = new BufferedInputStream(connection.getInputStream());
+
+                        // Inspect the header for its content type to determine if it's an image
+                        String type = connection.getHeaderField("Content-Type");
+
+                        if (type.startsWith("image")) {
+                            // Download image
+                            final Bitmap image = BitmapFactory.decodeStream(urlStream);
+
+                            // see below
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Switch visibility of text view and image view
+                                    textView.setVisibility(View.INVISIBLE);
+                                    imageView.setVisibility(View.VISIBLE);
+
+                                    // Set downloaded image
+                                    imageView.setImageBitmap(image);
+                                }
+                            });
+                        }
+                        else {
+                            // see below
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Switch visibility of text view and image view
+                                    textView.setVisibility(View.VISIBLE);
+                                    imageView.setVisibility(View.INVISIBLE);
+                                }
+                            });
+                        }
+
                         BufferedReader urlStreamReader = new BufferedReader(
                                 new InputStreamReader(urlStream));
                         final StringBuilder urlContent = new StringBuilder();
